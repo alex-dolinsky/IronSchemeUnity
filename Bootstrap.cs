@@ -20,6 +20,7 @@ public abstract class Bootstrap : MonoBehaviour {
 		IronScheme.RuntimeExtensions.Eval ("(import (unity))");
 	}
 
+	// for later use, maybe. Unity probably compresses assets anyway, maybe.
 	private DeflateStream DeflateString (this string str) {
 		var stream = new MemoryStream ();
 		var writer = new StreamWriter (stream);
@@ -30,10 +31,10 @@ public abstract class Bootstrap : MonoBehaviour {
 	}
 
 	protected void Start () {
-		var scm_fname = this.GetType ().ToString ();  // has to be the same as CS fname and the child class name.
+		var scm_fname = this.GetType ().ToString ();  // has to be the same as CS fname and the child class name. The file has to be fname.bytes in Resources.
 		var scm_script = (Resources.Load (scm_fname) as TextAsset).ToString ();
 		// will create an isolated environment for every scheme script whilst retaining global bindings.
 		scm_script = (new StringBuilder ("(let () (begin (define this {0}) ").Append (scm_script).Append ("))")).ToString ();
-		IronScheme.RuntimeExtensions.Eval (scm_script, gameObject);
+		IronScheme.RuntimeExtensions.Eval (scm_script, gameObject);  // every scheme script has an automatic binding to its parent gameObject.
 	}
 }
